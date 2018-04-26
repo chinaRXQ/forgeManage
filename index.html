@@ -1,0 +1,412 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=no" />
+    <title>BimAngle.com</title>
+    <link rel="stylesheet" type="text/css" href="Bim3Djs/style.css">
+    <link rel="stylesheet" type="text/css" href="Bim3Djs/main.css">
+
+    <script src="Bim3Djs/viewer3D.js"></script>
+    <script src="Extension/raycaster.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/echarts.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.easyui.min.js"></script>
+    <script src="js/PanelMove.js"></script>
+    <script src="Extension/HitTest.js"></script>
+    <script src="Extension/Sensor.js"></script>
+    <script src="Extension/AddIcon.js"></script>
+    <script src="Extension/echartData.js"></script>
+    <script src="Extension/addEchart.js"></script>
+    <script src="Extension/BIM3D.SafeMonitoring.js"></script>
+    <script src="Extension/BIM3D.Maintenance.js"></script>
+    <script src="Extension/BIM3D.Decision.js"></script>
+    <script src="Extension/BIM3D.TechDocument.js"></script>
+    <!--<script src="font/gentilis_regular.typeface.json"></script>-->
+    <script src="Extension/ClickAddSensor.js"></script>
+    <script src="Extension/InitSensor.js"></script>
+    <script src="Extension/DataJson.js"></script>
+    <script src="Extension/Flash.js"></script>
+    <script src="Extension/SelectSensor.js"></script>
+    <script src="Extension/UIToolBar.js"></script>
+    <script type="text/javascript" src="js/jquery.bigautocomplete.js"></script>
+    <link rel="stylesheet" type="text/css" href="font-awesome-4.7.0\css\font-awesome.min.css">
+    <link rel="stylesheet" href="css/jquery.bigautocomplete.css" type="text/css" />
+    <style>
+        li{list-style: none}
+        span a{text-decoration: none}
+        *{margin: 0;padding:0}
+        .left{float:left;height:30px;line-height: 30px;}
+        .left li{float:left;color:#888;font-size:14px;margin-right: 30px;}
+        .left li:hover{color:#fff}
+    </style>
+</head>
+
+<script type="text/javascript">
+    var serviceBase = 'http://115.159.83.179:88/Develop/';
+
+    //datas.Id的index
+    var index = 1;
+    var ObjectGeo = [];
+    var time;
+    var certainClass = [];
+    var currentTypeIdArr = [];
+    var currentSomeOne = [];
+
+    var dataJson = new DataJson();
+    var len = dataJson.json.length;
+
+    if( dataTime == null || dataTime == undefined)
+    {
+        var dataTime = setInterval("randomData()",1000);
+    }
+    else
+    {
+        clearInterval(dataTime);
+        var dataTime = setInterval("randomData()",1000);
+    }
+
+    function randomData()
+    {
+        var random1 = Math.round(30*Math.random());
+        var random2 = Math.round(30*Math.random());
+        var random3 = Math.round(30*Math.random());
+        var random4 = Math.round(30*Math.random());
+        var random5 = Math.round(80*Math.random());
+        var random6 = Math.round(80*Math.random());
+        var random7 = Math.round(80*Math.random());
+        var random8 = Math.round(80*Math.random());
+        var random9 = Math.round(20*Math.random());
+        var random10 = Math.round(20*Math.random());
+        var random11 = Math.round(20*Math.random());
+        var random12 = Math.round(20*Math.random());
+        var random13 = Math.round(20*Math.random());
+        var arr = [random1,random2,random3,random4,random5,random6,random7,random8,random9,random10,random11,random12,random13];
+        var len = dataJson.json.length;
+        for(var i = 0; i < len; i++)
+        {
+            var type = dataJson.json[i].TypeID;
+            switch (type)
+            {
+                case 1:
+                    dataJson.json[i].Value = arr[i];
+                    break;
+                case 2:
+                    dataJson.json[i].Value = arr[i];
+                    break;
+                case 3:
+                    dataJson.json[i].Value = arr[i];
+                    break;
+            }
+        }
+        //console.log(dataJson);
+    }
+
+    var data = dataJson;
+    echartData = new EchartData();
+
+</script>
+
+<body style="margin:0px;overflow:hidden;">
+<style>
+    #setSensor{background:#000000;opacity:0.8;width:230px;color:#fff;border-radius: 5px;}
+    #setSensor text{width:72px;}
+    #setSensor .content{font-size:14px;margin-left:10px;}
+    #setSensor .content li{line-height:30px}
+</style>
+    <div id="project">
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span id="spProjectName">选择项目</span><span class="caret"></span></a>
+                <ul class="dropdown-menu fontSize" id="projectItemList">
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <!--header-->
+    <div style="width:100%;height:50px;background:#000;opacity:0.8;z-index:100;cursor: pointer;color:#fff">
+        <div style="width:100%;height:10px;"></div>
+        <div style="width:100%;height:30px;">
+            <div style="width:12%;font-size:18px;margin-left:15px;" class="left">基于BIM的道桥管理系统</div>
+            <div id="headerNav" style="width:50%;font-size:16px;" class="left">
+                <li onclick="loadBIMScene('miSafeMonitoring', this.innerText)">安全预警</li>
+                <li onclick="loadBIMScene('miSafeMonitoring', this.innerText)">养护管理</li>
+                <li onclick="loadBIMScene('miSafeMonitoring', this.innerText)">资料管理</li>
+                <li onclick="loadBIMScene('miSafeMonitoring', this.innerText)">辅助决策</li>
+                <!--<li id="moreSensorDetail">多传感器详情面板</li>-->
+            </div>
+
+        </div>
+    </div>
+
+    <div id="moreSensorDetailPlane">
+        <div class="headerNav">
+            <ul>
+                <li>编号</li>
+                <li>类型</li>
+                <li>厂家</li>
+                <li>数值</li>
+                <li>状态</li>
+                <li>一级预警</li>
+                <li>二级预警</li>
+                <li>三级预警</li>
+                <li>位置</li>
+            </ul>
+            <div id="moreSensorDetaiData">
+
+            </div>
+        </div>
+
+    </div>
+
+    <!--<div id="slide">数据展示</div>-->
+    <!--<div id="panel">-->
+        <!--<div id="selected">-->
+            <!--<select id="selectContent" onchange="displayData(this.value)">-->
+            <!--</select>-->
+        <!--</div>-->
+        <!--<div id="DataDisplay"></div>-->
+        <!--<div id="setSensor">-->
+            <!--<p>设置传感器属性</p>-->
+            <!--<p><text>传感器ID<text><input id="sensorId" type="text" value=""/></p>-->
+            <!--<p><text>传感器类型<text><input id="sensorType" type="text" value=""/></p>-->
+            <!--<p><text>传感器名称<text><input id="sensorName" value="" type="text"/></p>-->
+            <!--<button id="submit">提交</button>-->
+        <!--</div>-->
+    <!--</div>-->
+    <div id="setSensor">
+        <p style="border-bottom: 1px solid #fff;text-align: center">设置传感器属性</p>
+        <div class="content">
+            <li style="margin-top:5px"><text>传感器ID&nbsp&nbsp&nbsp&nbsp</text><input id="sensorId" type="text" value=""/></li>
+            <li><text>传感器类型</text><input id="sensorType" type="text" value=""/></li>
+            <li><text>传感器名称</text><input id="sensorName" type="text" value=""/></li>
+        </div>
+        <p style="margin-left:10px;padding-bottom: 10px" ><button id="submit" style="width: 70px">提交</button></p>
+    </div>
+
+    <!--传感器详情信息面板-->
+    <div id="sensorDetail">
+        <div class="title">传感器详情信息面板</div>
+        <div class="content">
+            <li>编号：<text id="sensorID">索力传感器01</text></li>
+            <li>类型：<text id="type">索力传感器</text></li>
+            <li>厂家：<text id="facturers">华控兴业</text></li>
+            <li id="valueColor">数值：<text id="value">22.5P</text></li>
+            <li id="stateColor">状态：<text id="state">正常</text></li>
+            <li style="color:#ff0000">一级报警阈值：<text id="OneLevelValue">20mpa</text></li>
+            <li style="color:#ff8000">二级报警阈值：<text id="TwoLevelValue">10mpa</text></li>
+            <li style="color:#ffff00">三级报警阈值：<text id="ThreeLeveLValue">5mpa</text></li>
+        </div>
+    </div>
+    <!--传感器筛选面板-->
+    <div id="sensorFilter">
+        <div class="title">传感器筛选面板</div>
+        <div class="content">
+            <li><input id="FuzzyQuery" type="text" value="模糊查找" onfocus="this.value=''" onblur="if(this.value==''){this.value='模糊查找'}"/></li>
+            <select id="selectType">
+                <option value="0" selected>全部</option>
+                <option value="1">索力传感器</option>
+                <option value="2">温度传感器</option>
+                <option value="3">位移传感器</option>
+            </select>
+
+            <select id="sensorList">
+                <option value="" selected>请选择传感器</option>
+            </select>
+
+        </div>
+
+    </div>
+    <!--传感器历史数据面板-->
+    <div id="sensorHistoryData">
+        <div class="title">传感器历史数据面板</div>
+        <div class="content">
+            <li>
+                <select id="HistoryDataSelect">
+                </select>
+            </li>
+            <div class="time">
+                <button value="日" onclick="echart(this.value)">日</button>
+                <button value="周" onclick="echart(this.value)">周</button>
+                <button value="月" onclick="echart(this.value)">月</button>
+            </div>
+            <div id="main"></div>
+        </div>
+    </div>
+    <!--多传感器分析面板-->
+    <div id="sensorsAnalysis">
+        <div class="title">多传感器分析面板</div>
+        <div class="content">
+            <li>
+                <select id="AnalysisOne">
+                </select>
+            </li>
+            <li>
+                <select id="AnalysisTwo">
+                </select>
+            </li>
+            <div class="time" style="margin-top:8px">
+                <button value="日" onclick=clickR(0)>日</button>
+                <button value="周" onclick=clickR(1)>周</button>
+                <button value="月" onclick=clickR(2)>月</button>
+            </div>
+            <div id="moreSensor"></div>
+        </div>
+    </div>
+
+    <div id="viewer-local" style="position: relative;">
+    </div>
+<script src="js/initAbility.js"></script>
+<script>
+    var firstOrOrbit = true;
+    var curSceneName = "";
+    var curProjectItem = null;
+
+    var config = {
+        extensions: [
+            "ClearAllSensors","Autodesk.Viewing.ZoomWindow", /*"AddIcon", "Flash",*/ "InitSensor","ClickAddSensor","SelectSensor",
+        ],
+        disabledExtensions: {
+            measure: false,
+            section: false
+        }
+    };
+
+    var path = "model/3d.svf";
+    var element = document.getElementById('viewer-local');
+    var viewer = new Autodesk.Viewing.Private.GuiViewer3D(element, config);
+    //var viewer = new Autodesk.Viewing.Viewer3D(element, config);
+
+    //TODO:替换这个全局变量！！！
+    var AllSenorMesh = [];
+
+    var options = {
+        docid: path,
+        env: 'Local',
+        offline: 'true',
+        useADP: false
+    };
+
+    Autodesk.Viewing.Initializer(options, function () {
+        //viewer.initialize();
+
+        viewer.start();
+
+        viewer.load(options.docid, undefined, onLoadSuccess, onLoadError);
+
+        //console.log(viewer.impl.scene);
+        addIcon("toolbar-modelStructureTool","tree");
+        addIcon("toolbar-propertiesTool","id-card");
+        addIcon("toolbar-settingsTool","cogs");
+        addIcon("toolbar-fullscreenTool","tv");
+
+        hideOrDisplay("SDtail","sensorDetail");
+        hideOrDisplay("SSelect","sensorFilter");
+        hideOrDisplay("HData","sensorHistoryData");
+        hideOrDisplay("SAnalysis","sensorsAnalysis");
+    });
+
+    function onLoadSuccess(event) {
+        console.log('success');
+    }
+
+    function onLoadError(event) {
+        console.log('fail');
+    }
+
+    var tOrF = true;
+    function navDisplay()
+    {
+        if(tOrF)
+        {
+            var toolbar = document.getElementById("my-custom-view-toolbar");
+            toolbar.style.display = "block";
+        }
+        else
+        {
+            var toolbar = document.getElementById("my-custom-view-toolbar");
+            toolbar.style.display = "none";
+        }
+    }
+
+    hideOrDisplays("spProjectName","projectItemList");
+
+    function hideOrDisplays(id,other)
+    {
+        $("#"+id).bind("click", function (event)
+        {
+            var clickId = document.getElementById(id);
+            var current = document.getElementById(other);
+            var getDisplay = $("#"+other).css("display");
+            if(getDisplay==="none")
+            {
+                current.style.display = "block";
+            }
+            else
+            {
+                current.style.display = "none";
+            }
+        })
+    }
+
+    //加载模型
+    function loadModel(id, name, modelCode) {
+        if (viewer) {
+            viewer.impl.unloadCurrentModel();
+            var path = 'models/' + modelCode + '/3d.svf';
+            viewer.load(path, undefined, onLoadSuccess, onLoadError);
+            $('#spProjectName').text(name);
+            curProjectItem = { id: id, name: name, modelCode: modelCode };
+        }
+    }
+
+    //请求模型数据
+    $.post(serviceBase+'BIMShow/GetProjectItemList', function (data) {
+        var htmlString = '<li class="dropdown-header">项目列表</li>';
+        for (var i = 0; i < data.length; i++) {
+            htmlString = htmlString + '<li><a href="#" onclick="loadModel(\'' + data[i].Id + '\',\'' + data[i].Name + '\',\'' + data[i].ModelCode + '\');">' + data[i].Name + '</a></li>';
+        }
+        htmlString = htmlString + '<li role="separator" class="divider"></li><li><a href="#">更多...</a></li>';
+        $("#projectItemList").html(htmlString);
+        if (data.length > 0) {
+            loadModel(data[0].Id, data[0].Name, data[0].ModelCode);
+        }
+    }, "json");
+
+    function loadBIMScene(menuItemId,sceneName) {
+
+        $(".mi").removeClass("active");
+        $("#" + menuItemId).addClass("active");
+
+        uninitSafeMonitoringScene();
+        uninitMaintenanceScene();
+        uninitTechDocumentScene();
+        uninitDecisionScene();
+
+        curSceneName = sceneName;
+        if (sceneName == "安全预警") {
+            //
+            initSafeMonitoringScene();
+        }
+        else if (sceneName == "养护管理") {
+            //病害录入、病害审核、维修单下发、综合查询
+            initMaintenanceScene();
+        }
+        else if (sceneName == "资料管理") {
+            initTechDocumentScene();
+        }
+        else if (sceneName == "辅助决策") {
+            initDecisionScene();
+        }
+    }
+
+</script>
+
+</body>
+
+</html>

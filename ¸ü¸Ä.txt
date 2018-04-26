@@ -1,0 +1,37 @@
+49080:选择构件的颜色
+
+
+53106 改成'模型浏览器'
+55325 隐藏progress bar进度条
+59111 隐藏加载动画
+
+64052 去掉初始化查看当前项目的属性按钮;
+64205 隐藏viewcube;
+67421 按名称过滤;
+
+
+style.css:
+
+添加加载动画;
+.modelStructurePanel .dockingPanelTitle:  background:red
+dockingPanelTitle: background:red
+input.toolbar-search-box: background:white color:black
+infoButton: display:none
+.modelStructurePanel .treeview header: background:white
+.modelStructurePanel .treeview leaf color:black
+.modelStructurePanel .treeview group.collapsed>header>icon: 添加background:black
+.propertyPanel .treeview leaf: color:black;  background:#BCBCBC;
+.treeview group.expanded>header>icon: color:black
+.dockingPanel:hover background:white
+.treeview group>header background:#BCBCBC
+添加：
+.dockingPanel.modelStructurePanel{
+      left:50%;
+  }
+
+
+
+view3d核心代码：
+12059  render的操作；
+parseInt(item.color, 16),
+26295:疑似调度
